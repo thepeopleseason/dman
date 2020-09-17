@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <title>Default Managers</title>
+  <meta name="copyright"
+   content="Copyright &#169; 2007 CXRi" />
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+   href="Slidy/slidy.css" />
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+   href="Slidy/w3c-blue.css" />
+  <script src="Slidy/slidy.js"
+   type="text/javascript"></script>
+  <style type="text/css">
+  </style>
+</head>
+<body>
+
+<div class="background">
+  <img id="head-icon" alt="graphic with four colored squares"
+    src="Slidy/icon-blue.png" />
+</div>
+
+<div class="slide cover title">
+  <!-- hidden style graphics to ensure they are saved with other content -->
+  <img class="hidden" src="Slidy/bullet.png" alt="" />
+  <img class="hidden" src="Slidy/fold.gif" alt="" />
+  <img class="hidden" src="Slidy/unfold.gif" alt="" />
+  <img class="hidden" src="Slidy/fold-dim.gif" alt="" />
+  <img class="hidden" src="Slidy/nofold-dim.gif" alt="" />
+
+  <img class="hidden" src="Slidy/unfold-dim.gif" alt="" />
+  <img class="hidden" src="Slidy/bullet-fold.gif" alt="" />
+  <img class="hidden" src="Slidy/bullet-unfold.gif" alt="" />
+  <img class="hidden" src="Slidy/bullet-fold-dim.gif" alt="" />
+  <img class="hidden" src="Slidy/bullet-nofold-dim.gif" alt="" />
+  <img class="hidden" src="Slidy/bullet-unfold-dim.gif" alt="" />
+
+<h1>Default Managers in Django</h1>
+
+<p><a href="http://friendfeed.com/thepeopleseason">James Hsiao</a>,
+&lt;<a href="mailto:james.hsiao@cmgdigital.com">james.hsiao@coxinc.com</a>&gt;<br />
+</p>
+</div>
+
+<div class="slide"> <h1> Default Managers</h1>
+<ul>
+<li> Finally solved a bug that has hounded me for over ten days, using some Django wizardry shit. #expectofuckingpatronum </li>
+</ul>
+</div>
+
+
+<div class="slide"> <h1> Default Managers</h1>
+<ul>
+<li>
+"If you use custom Manager objects, take note that the first Manager
+Django encounters (in the order in which they're defined in the model)
+has a special status. Django interprets the first Manager defined in a
+class as the "default" Manager, and several parts of Django will use
+that Manager exclusively for that model."
+<br/>-- https://docs.djangoproject.com/en/dev/topics/db/managers/
+</li>
+</ul>
+</div>
+
+<div class="slide"> <h1> Default Managers</h1>
+<ul>
+<li>
+"If you use custom Manager objects, take note that the first Manager
+Django encounters (in the order in which they're defined in the model)
+has a special status. Django interprets the first Manager defined in a
+class as the "default" Manager, and <b>several parts of Django will use
+that Manager exclusively for that model</b>."
+<br/>-- https://docs.djangoproject.com/en/dev/topics/db/managers/
+</li>
+</ul>
+</div>
+
+<div class="slide"> <h1> Default Managers</h1>
+<ul>
+<li>
+"If you use custom Manager objects, take note that the first Manager
+Django encounters (in the order in which they're defined in the model)
+has a special status. Django interprets the first Manager defined in a
+class as the "default" Manager, and <b><big>several parts of Django will use
+that Manager exclusively for that model</big></b>."
+<br/>-- https://docs.djangoproject.com/en/dev/topics/db/managers/
+</li>
+</ul>
+</div>
+
+<div class="slide">
+<h1> Several Parts of Django? </h1>
+<ul>
+    <li> <pre> <small>
+./django/contrib/admin/filterspecs.py:         queryset = parent_model._default_manager.all()
+./django/contrib/admin/options.py:         qs = self.model._default_manager.get_query_set()
+./django/contrib/admin/widgets.py:             obj = self.rel.to._default_manager.using(self.db).get(**{key: value})
+./django/contrib/auth/models.py:                 self._profile_cache = model._default_manager.using(self._state.db).get(user__id__exact=self.id)
+./django/contrib/comments/forms.py:         possible_duplicates = self.get_comment_model()._default_manager.using(
+./django/contrib/comments/views/comments.py:         target = model._default_manager.using(using).get(pk=object_pk)
+<b>./django/contrib/contenttypes/generic.py:         superclass = rel_model._default_manager.__class__
+./django/contrib/contenttypes/generic.py:             qs = self.model._default_manager.none()
+./django/contrib/contenttypes/generic.py:                 queryset = self.model._default_manager
+./django/contrib/contenttypes/models.py:         return self.model_class()._default_manager.using(self._state.db).get(**kwargs)</b>
+./django/contrib/databrowse/datastructures.py:         easy_qs = self.model._default_manager.get_query_set()._clone(klass=EasyQuerySet)
+./django/contrib/databrowse/datastructures.py:         return EasyInstance(self, self.model._default_manager.get(pk=pk))
+./django/contrib/databrowse/datastructures.py:         for obj in self.model._default_manager.all()[:3]:
+./django/contrib/databrowse/plugins/fieldchoices.py:         obj_list = [v[field.name] for v in self.model._default_manager.distinct().order_by(field.name).values(field.name)]
+./django/contrib/gis/sitemaps/views.py:         placemarks = klass._default_manager.using(using).kml(field_name=field_name)
+./django/contrib/gis/sitemaps/views.py:             qs = klass._default_manager.using(using).transform(4326, field_name=field_name)
+./django/contrib/gis/sitemaps/views.py:             qs = klass._default_manager.using(using).all()
+./django/core/management/commands/dumpdata.py:                     objects.extend(model._default_manager.using(using).all())
+./django/core/serializers/python.py:                 if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
+./django/core/serializers/python.py:                             return field.rel.to._default_manager.db_manager(db).get_by_natural_key(*value).pk
+./django/core/serializers/python.py:                     if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
+./django/core/serializers/python.py:                             obj = field.rel.to._default_manager.db_manager(db).get_by_natural_key(*field_value)
+./django/core/serializers/xml_serializer.py:             if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
+./django/core/serializers/xml_serializer.py:                     obj = field.rel.to._default_manager.db_manager(self.db).get_by_natural_key(*field_value)
+./django/core/serializers/xml_serializer.py:         if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
+./django/core/serializers/xml_serializer.py:                     obj_pk = field.rel.to._default_manager.db_manager(self.db).get_by_natural_key(*field_value).pk
+./django/db/models/base.py:         if getattr(new_class, '_default_manager', None):
+./django/db/models/base.py:                 new_class._default_manager = None
+./django/db/models/base.py:                 new_class._default_manager = new_class._default_manager._copy_to_model(new_class)
+./django/db/models/base.py:         qs = self.__class__._default_manager.using(self._state.db).filter(**kwargs).filter(q).order_by('%s%s' % (order, field.name), '%spk' % order)
+./django/db/models/base.py:             obj = self._default_manager.filter(**{
+./django/db/models/base.py:                 '_order__%s' % op: self._default_manager.values('_order').filter(**{
+./django/db/models/base.py:             qs = model_class._default_manager.filter(**lookup_kwargs)
+./django/db/models/base.py:             qs = model_class._default_manager.filter(**lookup_kwargs)
+./django/db/models/fields/__init__.py:             lst = [(getattr(x, self.rel.get_related_field().attname), smart_unicode(x)) for x in rel_model._default_manager.complex_filter(self.rel.limit_choices_to)]
+./django/db/models/fields/__init__.py:             lst = [(x._get_pk_val(), smart_unicode(x)) for x in rel_model._default_manager.complex_filter(self.rel.limit_choices_to)]
+./django/db/models/fields/related.py:             rel_mgr = self.field.rel.to._default_manager
+./django/db/models/fields/related.py:                 self.related.model._default_manager.__class__)
+./django/db/models/fields/related.py:                 vals = self.through._default_manager.using(db).values_list(target_field_name, flat=True)
+./django/db/models/fields/related.py:                     self.through._default_manager.using(db).create(**{
+./django/db/models/fields/related.py:                 self.through._default_manager.using(db).filter(**{
+./django/db/models/fields/related.py:             self.through._default_manager.using(db).filter(**{
+./django/db/models/fields/related.py:         superclass = rel_model._default_manager.__class__
+./django/db/models/fields/related.py:         superclass = rel_model._default_manager.__class__
+./django/db/models/fields/related.py:         qs = self.rel.to._default_manager.using(using).filter(
+./django/db/models/fields/related.py:             'queryset': self.rel.to._default_manager.using(db).complex_filter(self.rel.limit_choices_to),
+./django/db/models/fields/related.py:             'queryset': self.rel.to._default_manager.using(db).complex_filter(self.rel.limit_choices_to)
+./django/db/models/manager.py: def ensure_default_manager(sender, **kwargs):
+./django/db/models/manager.py:     _default_manager attribute on the class. Also sets up the _base_manager
+./django/db/models/manager.py:     _default_manager if it's not a subclass of Manager).
+./django/db/models/manager.py:     if not getattr(cls, '_default_manager', None):
+./django/db/models/manager.py:         default_mgr = cls._default_manager.__class__
+./django/db/models/manager.py:             cls._base_manager = cls._default_manager
+./django/db/models/manager.py: signals.class_prepared.connect(ensure_default_manager)
+./django/db/models/manager.py:         if not getattr(model, '_default_manager', None) or self.creation_counter < model._default_manager.creation_counter:
+./django/db/models/manager.py:             model._default_manager = self
+./django/db/models/related.py:         queryset = self.model._default_manager.all()
+./django/forms/models.py:                 qs = self.model._default_manager.get_query_set()
+./django/forms/models.py:                 qs = pk.rel.to._default_manager.get_query_set()
+./django/forms/models.py:                 qs = self.model._default_manager.get_query_set()
+./django/forms/models.py:             queryset = self.model._default_manager
+./django/shortcuts/__init__.py:         manager = klass._default_manager
+./django/views/generic/detail.py:                 return self.model._default_manager.all()
+./django/views/generic/list.py:             queryset = self.model._default_manager.all()
+./djcelery/backends/database.py:         self.TaskModel._default_manager.store_result(task_id, result, status,
+./djcelery/backends/database.py:         self.TaskSetModel._default_manager.store_result(taskset_id, result)
+./djcelery/backends/database.py:         return self.TaskModel._default_manager.get_task(task_id).to_dict()
+./djcelery/backends/database.py:         meta = self.TaskSetModel._default_manager.restore_taskset(taskset_id)
+./djcelery/backends/database.py:             self.TaskModel._default_manager.get(task_id=task_id).delete()
+./djcelery/backends/database.py:             model._default_manager.delete_expired(self.expires)
+./djcelery/schedulers.py:         obj = self.model._default_manager.get(pk=self.model.pk)
+./djcelery/schedulers.py:         return cls(PeriodicTask._default_manager.update_or_create(name=name,
+./djcelery/tests/test_backends/test_database.py:         b.TaskModel._default_manager.all().delete()
+./djcelery/tests/test_backends/test_database.py:         self.assertEqual(b.TaskModel._default_manager.count(), 3)
+./djcelery/tests/test_backends/test_database.py:         b.TaskModel._default_manager.filter(task_id__in=ids[:-1]) \
+./djcelery/tests/test_backends/test_database.py:         self.assertEqual(b.TaskModel._default_manager.count(), 1)
+./haystack/indexes.py:         return self.model._default_manager.all()
+./haystack/indexes.py:         return self.model._default_manager.all()
+./haystack/models.py:                     self._object = self.model._default_manager.get(pk=self.pk)
+./haystack/query.py:                     loaded_objects[model] = model._default_manager.in_bulk(models_pks[model])
+./mptt/managers.py:         qs = self.model._default_manager.filter(pk=pk)
+./mptt/signals.py:         queryset = node._default_manager.filter(filters).order_by(*order_by)
+./oembed/providers.py:     queryset = None      # model._default_manager.all() if not supplied
+./oembed/providers.py:             self.queryset = self.model._default_manager.all()
+./profiles/views.py:     queryset = profile_model._default_manager.all()
+./reversion/admin.py:                 pks = set([unicode(o.pk) for o in inline.model._default_manager.complex_filter({fk_name:get_object_filter(obj)}).all()])
+./reversion/fields.py:         return self.queryset.model._default_manager.get_by_natural_key(*simplejson.loads(value))
+./reversion/fields.py:             rel_mgr = self.field.rel.to._default_manager
+./reversion/fields.py:                 value = self.field.rel.to._default_manager.get_by_natural_key(*simplejson.loads(value))
+./reversion/fields.py:                 self.related.model._default_manager.__class__)
+./reversion/fields.py:             obj = self.rel.to._default_manager.get_by_natural_key(*value)
+./reversion/fields.py:             'queryset': self.rel.to._default_manager.using(db).complex_filter(self.rel.limit_choices_to),
+./reversion/revisions.py:                         cls._default_manager.create(revision=revision, **kwargs)
+./treemenus/admin.py:             obj = model._default_manager.get(pk=obj_pk)
+</small></pre>
+</li>
+</ul></div>
+
+<div class="slide">
+<h1> Several Parts of Django? </h1>
+<ul>
+    <li> <pre> <small>
+./django/contrib/contenttypes/generic.py:         superclass = rel_model._default_manager.__class__
+./django/contrib/contenttypes/generic.py:             qs = self.model._default_manager.none()
+./django/contrib/contenttypes/generic.py:                 queryset = self.model._default_manager
+./django/contrib/contenttypes/models.py:         return self.model_class()._default_manager.using(self._state.db).get(**kwargs)
+./django/db/models/base.py:         if getattr(new_class, '_default_manager', None):
+./django/db/models/base.py:                 new_class._default_manager = None
+./django/db/models/base.py:                 new_class._default_manager = new_class._default_manager._copy_to_model(new_class)
+./django/db/models/base.py:         qs = self.__class__._default_manager.using(self._state.db).filter(**kwargs).filter(q).order_by('%s%s' % (order, field.name), '%spk' % order)
+./django/db/models/base.py:             obj = self._default_manager.filter(**{
+./django/db/models/base.py:                 '_order__%s' % op: self._default_manager.values('_order').filter(**{
+./django/db/models/base.py:             qs = model_class._default_manager.filter(**lookup_kwargs)
+./django/db/models/base.py:             qs = model_class._default_manager.filter(**lookup_kwargs)
+</small></pre>
+</li>
+</ul></div>
+
+<div class="slide"> <h1> Default Managers</h1>
+<ul>
+<li>
+"As a result, it's a good idea to be careful in your choice of default
+manager in order to avoid a situation where overriding get_query_set()
+results in an inability to retrieve objects you'd like to work with."
+<br/>-- https://docs.djangoproject.com/en/dev/topics/db/managers/
+</li>
+</ul>
+</div>
+
+<div class="slide">
+<h1> Case Study: MedleyStory and its Managers </h1>
+<ul>
+    <li> <pre>
+class MedleyStory(BaseMetadata, Story, Previewable):
+    """ Extension of Story
+    """
+    ...
+    objects = MedleyStoryManager()
+    allobjects = BaseStoryManager()
+</pre></li>
+</ul>
+</div>
+
+<div class="slide">
+<h1> MedleyStory and its Managers </h1>
+<ul>
+    <li> <pre>
+class MedleyStoryManager(BaseStoryManager):
+    """
+    filter out all AP Story objects
+    """
+
+    def get_query_set(self):
+        query = super(MedleyStoryManager, self).get_query_set()
+        return query.exclude(source__slug='ap')
+</pre></li>
+</ul>
+</div>
+
+<div class="slide">
+<h1> MedleyStory and its Managers </h1>
+<ul>
+    <li> <pre>
+class BaseStoryManager(MedleyMetadataManager):
+    """
+    return all medleystory and apstory objects
+    """
+
+    def get_query_set(self):
+        query = super(BaseStoryManager, self).get_query_set()
+        return query
+</pre></li>
+</ul>
+</div>
+
+<div class="slide">
+<h1> An inability to retrieve objects you'd like to work with </h1>
+<ul class="incremental">
+    <li> <code>return self.model_class()._default_manager.using(self._state.db).get(**kwargs)</code></li>
+  <li> <code>return query.exclude(source__slug='ap')</code></li>
+</ul></div>
+
+
+<div class="slide">
+<h1> Revised MedleyStory </h1>
+<ul class="incremental">
+    <li> <pre>
+class MedleyStory(BaseMetadata, Story, Previewable):
+    """ Extension of Story
+         NB: ellington.Story already inherits from MedleyURLMixin (because the tests break otherwise).
+    """
+    ...
+    # first manager defined is default_manager. return everything by
+    # default to avoid side effects for child classes e.g. APStory.
+    allobjects = BaseStoryManager()
+    objects = MedleyStoryManager()
+</pre></li>
+  <li> Side effects: Admin doesn't work right </li>
+</ul></div>
+
+
+<div class="slide">
+<h1> Admin Side Effects </h1>
+<ul>
+    <li> <pre>
+class MedleyStoryAdmin(MultiEditable, MedleyBaseMetadataModelAdmin, StoryAdmin, OriginatingSiteAdmin, SitifiedFieldAdmin):
+    ...
+    def queryset(self, request):
+        """ change default queryset to return non-ap stories """
+        qs = super(MedleyStoryAdmin, self).queryset(request)
+        return qs.exclude(source__slug='ap')
+
+    def full_queryset(self, request):
+        """ full queryset for child classes to access all stories """
+        return super(MedleyStoryAdmin, self).queryset(request)
+</pre></li>
+</ul></div>
+
+<div class="slide">
+<h1> Admin Side Effects </h1>
+<ul>
+    <li> <pre>
+class MedleyStoryAdmin(MultiEditable, MedleyBaseMetadataModelAdmin, StoryAdmin, OriginatingSiteAdmin, SitifiedFieldAdmin):
+    ...
+    def queryset(self, request):
+        """ change default queryset to return non-ap stories """
+        qs = super(MedleyStoryAdmin, self).queryset(request)
+        return qs.exclude(source__slug='ap')
+
+    def full_queryset(self, request):
+        """ full queryset for child classes to access all stories """
+        return super(MedleyStoryAdmin, self).queryset(request)
+</pre></li>
+</ul></div>
+
+<div class="slide">
+<h1> Admin Side Effects </h1>
+<ul>
+    <li> <pre>
+class APStoryAdmin(MedleyStoryAdmin):
+    ...
+    def queryset(self, request):
+        """ select only ap stories from parent full_queryset """
+        qs = super(APStoryAdmin, self).full_queryset(request)
+        return qs.filter(source__slug='ap')
+</pre></li>
+</ul></div>
+
+<div class="slide">
+<h1> Questions? </h1>
+<ul class="incremental">
+<li> Anyone? </li>
+<li> Anyone? </li>
+<li> <center><img src="stein.jpg"></center><br/> Something...D-O-O Economics? </li>
+<li> Voodoo Economics? </li>
+</ul></div>
+
+
+</body>
+</html>
